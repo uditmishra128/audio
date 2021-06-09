@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:audioimage/screens/output.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:chewie/chewie.dart';
-import 'package:video_player/video_player.dart';
+
 import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   final FlutterFFmpeg _ffMpeg = FlutterFFmpeg();
-  var myDir = Directory('/data/user/0/com.example.audioimage/cache/');
+  var myDir = Directory('/data/user/0/com.example.audioimage/cache');
   var _controller;
   var imagePath;
   var audioPath;
@@ -76,9 +76,13 @@ class HomeScreenState extends State<HomeScreen> {
         .execute("-i $imagePath -i $audioPath -c copy $outputFile")
         .then((return_code) => print("Return code $return_code"));
     print(outputFile);
-    setState(() {
-      _controller = VideoPlayerController.asset(outputFile);
-    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => OutputScreen(
+                video: outputFile,
+              )),
+    );
   }
 
   @override
@@ -90,32 +94,27 @@ class HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _controller != null
-                ? AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
+            image != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.file(
+                      image,
+                      height: 200,
+                    ),
                   )
-                : Container(),
-            // image != null
-            //     ? ClipRRect(
-            //         borderRadius: BorderRadius.circular(15),
-            //         child: Image.file(
-            //           image,
-            //         ),
-            //       )
-            //     : Container(
-            //         decoration: BoxDecoration(
-            //             color: Colors.grey,
-            //             borderRadius: BorderRadius.circular(20)),
-            //         child: Center(
-            //           child: Text(
-            //             'Select the image',
-            //             style: TextStyle(
-            //                 fontSize: 30, fontWeight: FontWeight.w300),
-            //             textAlign: TextAlign.center,
-            //           ),
-            //         ),
-            //       ),
+                : Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: Center(
+                      child: Text(
+                        'Select the image',
+                        style: TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.w300),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
             SizedBox(
               height: 30,
             ),
